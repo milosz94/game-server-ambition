@@ -40,15 +40,16 @@ wss.on('connection', (ws,req) => {
         }
         else if (d.action === "updatePosition")
         {
-            player.position.x = d.position.x;
-            player.position.y = d.position.y;
-            player.position.z = d.position.z;
+            player.id = thisPlayerID;
+            player.position.x = (d.position === undefined) ? 0 : d.position.x  ;
+            player.position.y = (d.position === undefined) ? 0 : d.position.y  ;
+            player.position.z = (d.position === undefined) ? 0 : d.position.z  ;
             var update_position_data =
                 {
                     action:"updatePosition",
                     data:player.toJavaScriptObject()
                 };
-            broadcastAll(wss,ws,player.toJson());
+            broadcast(wss,ws,JSON.stringify(update_position_data));
         }
 
 
@@ -73,9 +74,9 @@ wss.on('connection', (ws,req) => {
             data:player.toJavaScriptObject()
         };
 
-    ws.send(JSON.stringify(spawn_data));
-     ws.send(JSON.stringify(register_data));
 
+     ws.send(JSON.stringify(register_data));
+     ws.send(JSON.stringify(spawn_data));
     // Tell all other players that you are spawned
     broadcast(wss,ws,thisPlayerID);
     // wss.clients.forEach(function each(client) {
